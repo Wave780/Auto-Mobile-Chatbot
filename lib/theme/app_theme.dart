@@ -61,7 +61,7 @@ class AppThemes {
 
     return ThemeData(
         useMaterial3: true,
-        brightness: isDarkMode ? Brightness.dark : Brightness.light,
+        brightness: isDarkMode ? Brightness.light : Brightness.dark,
         primarySwatch: primarySwatch,
         textTheme: TextTheme(
           bodyLarge: TextStyle(fontSize: fontSize, fontFamily: fontFamily),

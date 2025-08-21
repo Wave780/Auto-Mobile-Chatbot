@@ -19,7 +19,7 @@ class NavBarButton extends StatelessWidget {
           isCollasped ? MainAxisAlignment.center : MainAxisAlignment.start,
       children: [
         Container(
-          margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+          margin: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
           child: Icon(
             icon,
             color: AppColors.secondaryVariantDark,

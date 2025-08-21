@@ -16,7 +16,7 @@ class _NavBarState extends State<NavBar> {
   Widget build(BuildContext context) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
-      width: isCollasped ? 60 : 124,
+      width: isCollasped ? 60 : 150,
       color: AppColors.secondaryLight,
       child: Column(
         children: [
@@ -60,26 +60,29 @@ class _NavBarState extends State<NavBar> {
                   icon: Icons.auto_awesome,
                 ),
                 const Spacer(),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      isCollasped = !isCollasped;
-                    });
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 14),
-                    child: Icon(
-                      isCollasped
-                          ? Icons.keyboard_arrow_right
-                          : Icons.keyboard_arrow_left,
-                      color: AppColors.secondaryVariantDark,
-                      size: 22,
-                    ),
-                  ),
-                )
               ],
             ),
           ),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                isCollasped = !isCollasped;
+              });
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 14),
+              child: Icon(
+                isCollasped
+                    ? Icons.keyboard_arrow_right
+                    : Icons.keyboard_arrow_left,
+                color: AppColors.secondaryVariantDark,
+                size: 22,
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 16,
+          )
         ],
       ),
     );
