@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Light Theme
-  static const Color primaryLight = Color(0xFF10A37F); // ChatGPT green
-  static const Color primaryVariantLight = Color(0xFF0E8C6F);
+  static const Color primaryLight = Color(0xFF2C2C2C); // ChatGPT green
+  static const Color primaryVariantLight = Color(0xFF4A4A4A);
   static const Color secondaryLight = Color(0xFF2C2C2C); // Neutral accent
   static const Color secondaryVariantLight = Color(0xFF4A4A4A);
   static const Color surfaceLight = Color(0xFFFFFFFF);
@@ -64,35 +64,42 @@ final ThemeData darkTheme = ThemeData(
 );
 
 final ThemeData textThem = ThemeData(
-  textTheme: const TextTheme(
+  textTheme: TextTheme(
 // Headlines
     headlineLarge: TextStyle(
       fontSize: 32,
       fontWeight: FontWeight.bold,
+      fontFamily: 'Poppins',
     ),
     headlineMedium: TextStyle(
       fontSize: 28,
       fontWeight: FontWeight.bold,
+      fontFamily: 'Poppins',
     ),
     headlineSmall: TextStyle(
-      fontSize: 24,
+      //color: Colors.white,
+      fontSize: 18,
       fontWeight: FontWeight.w600,
+      fontFamily: 'Poppins',
     ),
 
 // Body text
     bodyLarge: TextStyle(
       fontSize: 16,
       fontWeight: FontWeight.normal,
+      fontFamily: 'Inter',
       height: 1.5,
     ),
     bodyMedium: TextStyle(
       fontSize: 14,
       fontWeight: FontWeight.normal,
+      fontFamily: 'Inter',
       height: 1.4,
     ),
     bodySmall: TextStyle(
       fontSize: 12,
       fontWeight: FontWeight.normal,
+      fontFamily: 'Inter',
       height: 1.3,
     ),
 
@@ -100,6 +107,22 @@ final ThemeData textThem = ThemeData(
     labelLarge: TextStyle(
       fontSize: 14,
       fontWeight: FontWeight.w600,
+      fontFamily: 'Poppins',
     ),
   ),
 );
+
+MaterialColor _getPrimarySwatch(String colorName) {
+  switch (colorName) {
+    case 'red':
+      return Colors.red;
+    case 'green':
+      return Colors.green;
+    case 'blue':
+      return Colors.blue;
+    case 'orange':
+      return Colors.orange;
+    default:
+      return Colors.blue;
+  }
+}
