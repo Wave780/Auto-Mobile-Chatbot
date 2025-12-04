@@ -2,8 +2,26 @@ import 'package:auto_mobile_chatbot/theme/theme.dart';
 import 'package:auto_mobile_chatbot/utils/widegt%20/chat_bar_button.dart';
 import 'package:flutter/material.dart';
 
-class ChatSection extends StatelessWidget {
+import '../../screen/chat_page.dart';
+import '../../service/chat_service.dart';
+
+class ChatSection extends StatefulWidget {
   const ChatSection({super.key});
+
+  @override
+  State<ChatSection> createState() => _ChatSectionState();
+}
+
+class _ChatSectionState extends State<ChatSection> {
+  final queryController = TextEditingController();
+
+  final chatService = ChatService();
+
+  @override
+  void dispose() {
+    super.dispose();
+    queryController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +52,11 @@ class ChatSection extends StatelessWidget {
           ),
           child: Column(
             children: [
-              const Padding(
+              Padding(
                 padding: EdgeInsets.all(16.0),
                 child: TextField(
-                  decoration: InputDecoration(
+                  controller: queryController,
+                  decoration: const InputDecoration(
                     hintText: 'Ask about your car...',
                     hintStyle: TextStyle(
                       fontSize: 16,
@@ -65,16 +84,31 @@ class ChatSection extends StatelessWidget {
                       label: 'Thinking',
                     ),
                     const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.cyan,
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: const Icon(
-                        Icons.arrow_forward,
-                        color: AppColors.onPrimaryLight,
-                        size: 16,
+                    GestureDetector(
+                      onTap: () {
+                        final question = queryController.text.trim();
+                        if (question.isEmpty) return;
+
+                        final session =
+                            chatService.startSession(title: question);
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ChatPage(
+                                  question: question,
+                                  sessionId: session.id,
+                                  title: session.title,
+                                )));
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.cyan,
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: const Icon(
+                          Icons.arrow_forward,
+                          color: AppColors.onPrimaryLight,
+                          size: 16,
+                        ),
                       ),
                     )
                   ],

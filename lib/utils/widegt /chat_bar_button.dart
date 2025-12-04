@@ -20,7 +20,7 @@ class ChatBarButton extends StatelessWidget {
             size: 20,
             color: Colors.grey,
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           Text(
