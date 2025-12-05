@@ -22,8 +22,8 @@ from fastapi import  FastAPI
 # ===================== SETUP =====================
 # Load env variables
 load_dotenv()
-# openai_key = os.getenv("OPENAI_API_KEY")
-openai_key = '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'
+openai_key = os.getenv("OPENAI_API_KEY")
+# openai_key = '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'
 if not openai_key:
     raise ValueError("OPENAI_API_KEY environment variable is not set.")
 
