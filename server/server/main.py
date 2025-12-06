@@ -21,10 +21,10 @@ from fastapi import  FastAPI
 
 # ===================== SETUP =====================
 # Load env variables
-load_dotenv()
+# load_dotenv()
 openai_key = os.getenv("OPENAI_API_KEY")
-if not openai_key:
-    raise ValueError("OPENAI_API_KEY environment variable is not set.")
+# if not openai_key:
+#     raise ValueError("OPENAI_API_KEY environment variable is not set.")
 
 # OpenAI & Chroma setup
 openai_ef = embedding_functions.OpenAIEmbeddingFunction(
