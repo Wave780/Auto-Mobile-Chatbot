@@ -170,6 +170,8 @@
 #
 
 import os
+
+from chromadb.utils import embedding_functions
 from dotenv import load_dotenv
 import chromadb
 from openai import OpenAI
@@ -194,6 +196,18 @@ collection = chroma_client.get_or_create_collection(name="document_qa_collection
 # FastAPI app
 app = FastAPI()
 
+
+
+
+openai_ef = embedding_functions.OpenAIEmbeddingFunction(
+    api_key=openai_key,
+    model_name="text-embedding-3-small"
+)
+
+collection = chroma_client.get_or_create_collection(
+    name="document_qa_collection",
+    embedding_function=openai_ef
+)
 
 # ---------------- PDF Helper ----------------
 def extract_text_from_pdf(file_path):
