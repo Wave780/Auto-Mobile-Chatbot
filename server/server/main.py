@@ -219,6 +219,21 @@ def get_openai_embedding(text: str):
     return resp.data[0].embedding
 
 
+import requests
+
+def download_from_b2(b2_url, save_path):
+    response = requests.get(b2_url)
+    if response.status_code != 200:
+        raise Exception(f"Failed to download {b2_url}: {response.text}")
+
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+
+    with open(save_path, "wb") as f:
+        f.write(response.content)
+
+    print(f"Downloaded: {save_path}")
+
+
 # ---------------- API ROUTES ----------------
 
 # Upload + embed PDF

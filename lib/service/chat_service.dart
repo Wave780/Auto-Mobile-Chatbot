@@ -33,7 +33,7 @@ class ChatService {
       headers: {
         // TODO: Replace with your actual auth token
         'Authorization':
-            'Bearer 6xe7ppznk9xguv7qvule7rqetcrz1r2z6cmpup881yy8wefhd9mm5hf0yj41ue9e',
+            'Bearer 6xe7ppznk9xguv7qvule7rqetcrz1r2z6cmpup881yy8wefhd9mm5hf0yj41ue9e'
       },
     );
     print("Connected!");
