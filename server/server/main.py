@@ -223,23 +223,51 @@ def get_openai_embedding(text: str):
 
 
 
-def download_from_backblaze(file_name):
-    bucket_url = os.getenv("B2_BUCKET_URL")
-    download_url = f"{bucket_url}/{file_name}"
+# def download_from_backblaze(file_name):
+#     bucket_url = os.getenv("B2_BUCKET_URL")
+#     download_url = f"{bucket_url}/{file_name}"
+#
+#     save_dir = "./car_manuels"
+#     os.makedirs(save_dir, exist_ok=True)
+#     save_path = f"{save_dir}/{file_name}"
+#
+#     print("Downloading:", download_url)
+#
+#     res = requests.get(download_url)
+#     if res.status_code != 200:
+#         print("Failed to download:", res.text)
+#     else:
+#         with open(save_path, "wb") as f:
+#             f.write(res.content)
+#         print(f"Saved to {save_path}")
+
+import boto3
+
+def download_from_b2_s3(file_name):
+    bucket_name = os.getenv("B2_BUCKET_NAME")
+    key_id = os.getenv("S3_ACCESS_KEY_ID")
+    app_key = os.getenv("S3_SECRET_ACCESS_KEY")
+    endpoint = os.getenv("S3_ENDPOINT")
+
+    s3 = boto3.client(
+        "s3",
+        endpoint_url=endpoint,
+        aws_access_key_id=key_id,
+        aws_secret_access_key=app_key,
+    )
 
     save_dir = "./car_manuels"
     os.makedirs(save_dir, exist_ok=True)
     save_path = f"{save_dir}/{file_name}"
 
-    print("Downloading:", download_url)
+    print("Downloading from B2 (private bucket):", file_name)
 
-    res = requests.get(download_url)
-    if res.status_code != 200:
-        print("Failed to download:", res.text)
-    else:
-        with open(save_path, "wb") as f:
-            f.write(res.content)
-        print(f"Saved to {save_path}")
+    try:
+        s3.download_file(bucket_name, file_name, save_path)
+        print("Saved:", save_path)
+    except Exception as e:
+        print("❌ Error downloading:", e)
+
 
 # ---------------- API ROUTES ----------------
 
