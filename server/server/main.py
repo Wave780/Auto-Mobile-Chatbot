@@ -177,6 +177,8 @@ from fastapi import FastAPI, HTTPException, UploadFile, File
 from pydantic import BaseModel
 from PyPDF2 import PdfReader
 import uvicorn
+import requests
+
 
 # Load env
 load_dotenv()
@@ -219,20 +221,25 @@ def get_openai_embedding(text: str):
     return resp.data[0].embedding
 
 
-import requests
 
-def download_from_b2(b2_url, save_path):
-    response = requests.get(b2_url)
-    if response.status_code != 200:
-        raise Exception(f"Failed to download {b2_url}: {response.text}")
 
-    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+def download_from_backblaze(file_name):
+    bucket_url = os.getenv("B2_BUCKET_URL")
+    download_url = f"{bucket_url}/{file_name}"
 
-    with open(save_path, "wb") as f:
-        f.write(response.content)
+    save_dir = "./car_manuels"
+    os.makedirs(save_dir, exist_ok=True)
+    save_path = f"{save_dir}/{file_name}"
 
-    print(f"Downloaded: {save_path}")
+    print("Downloading:", download_url)
 
+    res = requests.get(download_url)
+    if res.status_code != 200:
+        print("Failed to download:", res.text)
+    else:
+        with open(save_path, "wb") as f:
+            f.write(res.content)
+        print(f"Saved to {save_path}")
 
 # ---------------- API ROUTES ----------------
 
