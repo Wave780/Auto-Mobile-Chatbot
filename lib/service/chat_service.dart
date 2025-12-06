@@ -28,7 +28,14 @@ class ChatService {
   WebSocket? _socket;
 
   void connect() {
-    _socket = WebSocket(Uri.parse("https://wave780.pythonanywhere.com"));
+    _socket = WebSocket(
+      Uri.parse("wss://inherent-kathie-wave780-57107277.koyeb.app/ws"),
+      headers: {
+        // TODO: Replace with your actual auth token
+        'Authorization':
+            'Bearer 6xe7ppznk9xguv7qvule7rqetcrz1r2z6cmpup881yy8wefhd9mm5hf0yj41ue9e',
+      },
+    );
     print("Connected!");
 
     _socket!.messages.listen((message) {
