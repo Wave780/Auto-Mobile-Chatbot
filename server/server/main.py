@@ -191,7 +191,10 @@ client = OpenAI(api_key=openai_key)
 
 # Chroma client (Koyeb-approved path)
 chroma_client = chromadb.PersistentClient(path="/main/chroma")
-collection = chroma_client.get_or_create_collection(name="document_qa_collection")
+# collection = chroma_client.get_or_create_collection(name="document_qa_collection")
+
+
+
 
 # FastAPI app
 app = FastAPI()
@@ -204,10 +207,17 @@ openai_ef = embedding_functions.OpenAIEmbeddingFunction(
     model_name="text-embedding-3-small"
 )
 
-collection = chroma_client.get_or_create_collection(
+# collection = chroma_client.get_or_create_collection(
+#     name="document_qa_collection",
+#     embedding_function=openai_ef
+# )
+chroma_client.delete_collection("document_qa_collection")
+
+collection = chroma_client.create_collection(
     name="document_qa_collection",
     embedding_function=openai_ef
 )
+
 
 # ---------------- PDF Helper ----------------
 def extract_text_from_pdf(file_path):
