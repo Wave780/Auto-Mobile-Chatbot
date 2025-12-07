@@ -214,7 +214,7 @@ openai_ef = embedding_functions.OpenAIEmbeddingFunction(
 chroma_client.delete_collection("document_qa_collection")
 
 collection = chroma_client.create_collection(
-    name="document_qa_collection",
+    name="car_manuals",
     embedding_function=openai_ef
 )
 
