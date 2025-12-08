@@ -29,7 +29,7 @@ class ChatService {
 
   void connect() {
     _socket = WebSocket(
-      Uri.parse("wss://inherent-kathie-wave780-57107277.koyeb.app/ws"),
+      Uri.parse("wss://inherent-kathie-wave780-57107277.koyeb.app/ws/query"),
       headers: {
         // TODO: Replace with your actual auth token
         'Authorization':

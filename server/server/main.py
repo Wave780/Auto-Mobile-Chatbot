@@ -182,6 +182,8 @@ import uvicorn
 import asyncio
 from openai import AsyncOpenAI
 from fastapi import BackgroundTasks
+from websocket import WebSocket
+
 # Load env
 load_dotenv()
 openai_key = os.getenv("OPENAI_API_KEY")
@@ -345,6 +347,14 @@ def download_from_b2_s3(file_name):
 
 
 # ---------------- API ROUTES ----------------
+
+@app.websocket("/ws")
+async def websocket_endpoint(ws: WebSocket):
+    await ws.accept()
+    await ws.send_text("Connected")
+    ...
+
+
 
 # Upload + embed PDF
 
