@@ -299,26 +299,43 @@ def download_from_b2_s3(file_name):
 # Upload + embed PDF
 @app.post("/upload_pdf")
 async def upload_pdf(file: UploadFile = File(...)):
-    if not file.filename.endswith(".pdf"):
+    if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(400, "Only PDF files allowed")
+
+    import os
+    os.makedirs("/data", exist_ok=True)
 
     file_path = f"/data/{file.filename}"
 
+    # Write the file in safe chunks
     with open(file_path, "wb") as f:
-        f.write(await file.read())
+        while True:
+            chunk = await file.read(1024 * 1024)  # 1MB
+            if not chunk:
+                break
+            f.write(chunk)
 
-    text = extract_text_from_pdf(file_path)
+    # Extract PDF text
+    try:
+        text = extract_text_from_pdf(file_path)
+    except Exception as e:
+        raise HTTPException(500, f"PDF parsing failed: {e}")
+
     chunks = split_text(text)
 
     for i, chunk in enumerate(chunks):
-        emb = get_openai_embedding(chunk)
-        chunk_id = f"{file.filename}_chunk{i}"
+        try:
+            emb = get_openai_embedding(chunk)
+            chunk_id = f"{file.filename}_chunk{i}"
 
-        collection.upsert(
-            ids=[chunk_id],
-            documents=[chunk],
-            embeddings=[emb]
-        )
+            collection.upsert(
+                ids=[chunk_id],
+                documents=[chunk],
+                embeddings=[emb]
+            )
+
+        except Exception as e:
+            raise HTTPException(500, f"Embedding or DB error: {e}")
 
     return {"status": "success", "chunks": len(chunks)}
 
