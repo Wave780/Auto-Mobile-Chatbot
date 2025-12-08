@@ -175,14 +175,13 @@ from chromadb.utils import embedding_functions
 from dotenv import load_dotenv
 import chromadb
 from openai import OpenAI
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File, WebSocket
 from pydantic import BaseModel
 from PyPDF2 import PdfReader
 import uvicorn
 import asyncio
 from openai import AsyncOpenAI
 from fastapi import BackgroundTasks
-from websocket import WebSocket
 
 # Load env
 load_dotenv()
@@ -352,7 +351,7 @@ def download_from_b2_s3(file_name):
 async def websocket_endpoint(ws: WebSocket):
     await ws.accept()
     await ws.send_text("Connected")
-    ...
+    pass
 
 
 
