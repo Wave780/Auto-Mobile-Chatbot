@@ -191,7 +191,7 @@ client = OpenAI(api_key=openai_key)
 
 # Chroma client (Koyeb-approved path)
 chroma_client = chromadb.PersistentClient(path="/main/chroma")
-collection = chroma_client.get_or_create_collection(name="document_qa_collection")
+# collection = chroma_client.get_or_create_collection(name="document_qa_collection")
 
 
 
@@ -206,6 +206,8 @@ openai_ef = embedding_functions.OpenAIEmbeddingFunction(
     api_key=openai_key,
     model_name="text-embedding-3-small"
 )
+
+chroma_client.delete_collection("document_qa_collection")
 
 # collection = chroma_client.get_or_create_collection(
 #     name="document_qa_collection",
@@ -368,3 +370,5 @@ def generate_response(question, context_chunks):
 # Start local server
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+
+
