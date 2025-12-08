@@ -190,7 +190,7 @@ openai_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=openai_key)
 
 # Chroma client (Koyeb-approved path)
-chroma_client = chromadb.PersistentClient(path="/main/chroma")
+chroma_client = chromadb.PersistentClient(path="/data/chroma")
 # collection = chroma_client.get_or_create_collection(name="document_qa_collection")
 
 
@@ -207,16 +207,12 @@ openai_ef = embedding_functions.OpenAIEmbeddingFunction(
     model_name="text-embedding-3-small"
 )
 
-# collection = chroma_client.get_or_create_collection(
-#     name="document_qa_collection",
-#     embedding_function=openai_ef
-# )
-chroma_client.delete_collection("document_qa_collection")
-
-collection = chroma_client.create_collection(
+collection = chroma_client.get_or_create_collection(
     name="document_qa_collection",
     embedding_function=openai_ef
 )
+
+
 
 
 # ---------------- PDF Helper ----------------
