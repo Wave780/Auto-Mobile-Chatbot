@@ -181,7 +181,7 @@ from PyPDF2 import PdfReader
 import uvicorn
 import asyncio
 from openai import AsyncOpenAI
-
+from fastapi import BackgroundTasks
 # Load env
 load_dotenv()
 openai_key = os.getenv("OPENAI_API_KEY")
@@ -347,47 +347,33 @@ def download_from_b2_s3(file_name):
 # ---------------- API ROUTES ----------------
 
 # Upload + embed PDF
+
+
 @app.post("/upload_pdf")
-async def upload_pdf(file: UploadFile = File(...)):
+async def upload_pdf(file: UploadFile = File(...), background: BackgroundTasks = None):
     if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(400, "Only PDF files allowed")
 
-    import os
     os.makedirs("/data", exist_ok=True)
-
     file_path = f"/data/{file.filename}"
 
-    # Write the file in safe chunks
+    # Fast non-blocking file write
     with open(file_path, "wb") as f:
         while True:
-            chunk = await file.read(1024 * 1024)  # 1MB
+            chunk = await file.read(1024 * 1024)
             if not chunk:
                 break
             f.write(chunk)
 
-    # Extract PDF text
-    try:
-        text = extract_text_from_pdf(file_path)
-    except Exception as e:
-        raise HTTPException(500, f"PDF parsing failed: {e}")
+    # Queue a background task (very important!)
+    background.add_task(run_async_process_pdf, file_path, file.filename)
 
-    chunks = split_text(text)
-
-    for i, chunk in enumerate(chunks):
-        try:
-            emb = get_openai_embedding(chunk)
-            chunk_id = f"{file.filename}_chunk{i}"
-
-            collection.upsert(
-                ids=[chunk_id],
-                documents=[chunk],
-                embeddings=[emb]
-            )
-
-        except Exception as e:
-            raise HTTPException(500, f"Embedding or DB error: {e}")
-
-    return {"status": "success", "chunks": len(chunks)}
+    # Return immediately (<1 sec)
+    return {
+        "status": "processing",
+        "message": "PDF is being processed in the background",
+        "file": file.filename
+    }
 
 
 # Query
