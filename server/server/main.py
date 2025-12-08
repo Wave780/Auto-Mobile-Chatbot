@@ -190,7 +190,7 @@ openai_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=openai_key)
 
 # Chroma client (Koyeb-approved path)
-chroma_client = chromadb.PersistentClient(path="/data/chroma")
+chroma_client = chromadb.PersistentClient(path="/main/chroma")
 collection = chroma_client.get_or_create_collection(name="document_qa_collection")
 
 
