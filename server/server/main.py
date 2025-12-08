@@ -182,6 +182,7 @@ import uvicorn
 import asyncio
 from openai import AsyncOpenAI
 from fastapi import BackgroundTasks
+from fastapi.middleware.cors import CORSMiddleware
 
 # Load env
 load_dotenv()
@@ -202,7 +203,13 @@ PARALLEL_WORKERS = 15
 # FastAPI app
 app = FastAPI()
 
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 
 openai_ef = embedding_functions.OpenAIEmbeddingFunction(
@@ -264,7 +271,6 @@ async def process_pdf_async(file_path, filename):
             documents=[chunk],
             embeddings=[emb]
         )
-
 
 def run_async_process_pdf(file_path, filename):
     asyncio.run(process_pdf_async(file_path, filename))
@@ -348,10 +354,8 @@ def download_from_b2_s3(file_name):
 # ---------------- API ROUTES ----------------
 
 @app.websocket("/ws")
-async def websocket_endpoint(ws: WebSocket):
-    await ws.accept()
-    await ws.send_text("Connected")
-    pass
+async def websocket_chat(websocket: WebSocket):
+    await websocket.accept()
 
 
 

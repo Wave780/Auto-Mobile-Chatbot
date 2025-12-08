@@ -13,15 +13,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
-  void initState() {
-    final chatService = ChatService();
-
-    // TODO: implement initState
-    super.initState();
-    chatService.connect();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: LayoutBuilder(

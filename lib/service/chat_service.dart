@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:hive/hive.dart';
-import 'package:web_socket_client/web_socket_client.dart';
+import 'package:http/http.dart' as http;
 
 import '../model/chat_message.dart';
 import '../model/chat_session.dart';
@@ -25,39 +25,30 @@ class ChatService {
   final sessionsBox = Hive.box<ChatSession>('sessions');
   final messagesBox = Hive.box<ChatMessage>('messages');
 
-  WebSocket? _socket;
+  Future<void> chat(String query) async {
+    final url =
+        Uri.parse("https://inherent-kathie-wave780-57107277.koyeb.app/query");
+    final headers = {
+      'Content-Type': 'application/json',
+      // TODO: Replace with your actual auth token
+      'Authorization':
+          'Bearer b02ywtw5b1d9ifq9b6ofhq1v2gfxz56h8k61vk91viovqwaykhkkwghpucjumyat'
+    };
+    final payload = {"question": query, "n_results": 2};
+    final response =
+        await http.post(url, headers: headers, body: jsonEncode(payload));
 
-  void connect() {
-    _socket = WebSocket(
-      Uri.parse("wss://inherent-kathie-wave780-57107277.koyeb.app/ws/query"),
-      headers: {
-        // TODO: Replace with your actual auth token
-        'Authorization':
-            'Bearer 6xe7ppznk9xguv7qvule7rqetcrz1r2z6cmpup881yy8wefhd9mm5hf0yj41ue9e'
-      },
-    );
-    print("Connected!");
-
-    _socket!.messages.listen((message) {
-      final data = jsonDecode(message);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
       if (data.containsKey("results")) {
         _searchResultController.add(data);
       } else {
         _chatController.add(data);
       }
-      print(message);
-    });
-  }
-
-  void chat(String query) {
-    final payload = {"question": query, "n_results": 2};
-    _socket?.send(jsonEncode(payload));
-  }
-
-  void dispose() {
-    print("Closing WebSocket...");
-    _socket?.close();
-    _chatController.close();
+    } else {
+      // Handle error
+      print('Error: ${response.statusCode}');
+    }
   }
 
   ChatSession startSession({String? title}) {
