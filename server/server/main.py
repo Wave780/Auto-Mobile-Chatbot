@@ -179,8 +179,8 @@ from fastapi import FastAPI, HTTPException, UploadFile, File
 from pydantic import BaseModel
 from PyPDF2 import PdfReader
 import uvicorn
-import requests
-
+import asyncio
+from openai import AsyncOpenAI
 
 # Load env
 load_dotenv()
@@ -188,13 +188,15 @@ openai_key = os.getenv("OPENAI_API_KEY")
 
 # OpenAI client
 client = OpenAI(api_key=openai_key)
+async_client = AsyncOpenAI(api_key=openai_key)
 
 # Chroma client (Koyeb-approved path)
 chroma_client = chromadb.PersistentClient(path="/main/chroma")
 # collection = chroma_client.get_or_create_collection(name="document_qa_collection")
 
 
-
+# PARALLEL WORKERS = how many embedding calls can run at once
+PARALLEL_WORKERS = 15
 
 # FastAPI app
 app = FastAPI()
@@ -218,6 +220,54 @@ collection = chroma_client.get_or_create_collection(
 #     name="document_qa_collection",
 #     embedding_function=openai_ef
 # )
+#------------------  ------------------------
+
+async def async_get_embedding(text: str):
+    """Get embedding asynchronously."""
+    resp = await async_client.embeddings.create(
+        model="text-embedding-3-small",
+        input=text,
+    )
+    return resp.data[0].embedding
+
+
+async def embed_chunks_parallel(chunks: list[str]):
+    """
+    Embeds many chunks in parallel with concurrency limit.
+    Returns list of embeddings in matching order to chunks.
+    """
+
+    semaphore = asyncio.Semaphore(PARALLEL_WORKERS)
+
+    async def embed_with_limit(chunk):
+        async with semaphore:
+            return await async_get_embedding(chunk)
+
+    tasks = [embed_with_limit(chunk) for chunk in chunks]
+    embeddings = await asyncio.gather(*tasks)
+    return embeddings
+
+
+async def process_pdf_async(file_path, filename):
+    text = extract_text_from_pdf(file_path)
+    chunks = split_text(text)
+
+    # embed all chunks in parallel
+    embeddings = await embed_chunks_parallel(chunks)
+
+    # store all into chroma
+    for i, (chunk, emb) in enumerate(zip(chunks, embeddings)):
+        chunk_id = f"{filename}_chunk{i}"
+        collection.upsert(
+            ids=[chunk_id],
+            documents=[chunk],
+            embeddings=[emb]
+        )
+
+
+def run_async_process_pdf(file_path, filename):
+    asyncio.run(process_pdf_async(file_path, filename))
+
 
 
 # ---------------- PDF Helper ----------------
