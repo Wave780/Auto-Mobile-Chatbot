@@ -211,7 +211,7 @@ openai_ef = embedding_functions.OpenAIEmbeddingFunction(
 #     name="document_qa_collection",
 #     embedding_function=openai_ef
 # )
-chroma_client.delete_collection("document_qa_collection")
+# chroma_client.delete_collection("document_qa_collection")
 
 collection = chroma_client.create_collection(
     name="document_qa_collection",
