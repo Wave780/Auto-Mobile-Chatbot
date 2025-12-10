@@ -3,27 +3,32 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferenceService {
-  static SharedPreferences? _instance;
+  static late SharedPreferences _instance;
 
-  //Initialize preferences(call this in the main)
   static Future<void> init() async {
     _instance = await SharedPreferences.getInstance();
   }
 
-  static SharedPreferences get instance {
-    if (_instance == null) {
-      throw Exception('PreferencesServices not initialized. Call init() first');
-    }
-    return _instance!;
+  // -----------------------------
+  // Onboarding flag
+  // -----------------------------
+  static const _onboardingCompleteKey = 'onboardingComplete';
+
+  static Future<void> setOnboardingComplete(bool value) async {
+    await _instance.setBool(_onboardingCompleteKey, value);
+  }
+
+  static bool getOnboardingComplete() {
+    return _instance.getBool(_onboardingCompleteKey) ?? false;
   }
 
   //Save simple values
   static Future<bool> setString(String key, String value) {
-    return instance.setString(key, value);
+    return _instance.setString(key, value);
   }
 
   static String? getString(String key) {
-    return instance.getString(key);
+    return _instance.getString(key);
   }
 
   //Save complex object as JSON

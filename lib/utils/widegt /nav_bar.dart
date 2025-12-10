@@ -1,6 +1,8 @@
 import 'package:auto_mobile_chatbot/screen/home_screen.dart';
+import 'package:auto_mobile_chatbot/screen/login_screen.dart';
 import 'package:auto_mobile_chatbot/theme/theme.dart';
 import 'package:auto_mobile_chatbot/utils/widegt%20/nav_bar_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../model/chat_session.dart';
@@ -19,10 +21,12 @@ class _NavBarState extends State<NavBar> {
   bool isCollasped = true;
   final chatService = ChatService();
   List<ChatSession> sessions = [];
+  User? user;
 
   @override
   void initState() {
     super.initState();
+    user = FirebaseAuth.instance.currentUser;
     _loadSessions();
   }
 
@@ -37,10 +41,19 @@ class _NavBarState extends State<NavBar> {
     _loadSessions();
   }
 
+  Future<void> _signOut() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const LoginScreen()));
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < 600;
+    final userName = user?.displayName ?? "No Name";
+    final userEmail = user?.email ?? "No Email";
+    final initials = (user?.email ?? "U")[0].toUpperCase();
 
     if (isMobile) {
       return Scaffold(
@@ -71,7 +84,14 @@ class _NavBarState extends State<NavBar> {
           ],
         ),
         drawer: isMobile
-            ? NavBarDrawer(sessions: sessions, onDelete: _deleteSession)
+            ? NavBarDrawer(
+                sessions: sessions,
+                onDelete: _deleteSession,
+                userName: userName,
+                userEmail: userEmail,
+                initials: initials,
+                onSignOut: _signOut,
+              )
             : null,
         body: widget.body,
       );
@@ -79,7 +99,7 @@ class _NavBarState extends State<NavBar> {
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
-      width: isCollasped ? 60 : 250,
+      width: isCollasped ? 80 : 250,
       color: AppColors.secondaryLight,
       child: SafeArea(
         child: Column(
@@ -176,7 +196,7 @@ class _NavBarState extends State<NavBar> {
                             ),
                             IconButton(
                               icon: const Icon(Icons.delete_outline,
-                                  color: Colors.white70, size: 20),
+                                  color: Colors.red, size: 20),
                               onPressed: () => _deleteSession(session.id),
                             )
                           ],
@@ -188,6 +208,47 @@ class _NavBarState extends State<NavBar> {
               ),
             ),
             const Spacer(),
+            PopupMenuButton<String>(
+              offset: const Offset(0, -120),
+              onSelected: (value) {
+                if (value == 'logout') {
+                  _signOut();
+                }
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                const PopupMenuItem<String>(
+                  value: 'logout',
+                  child: ListTile(
+                    leading: Icon(Icons.logout),
+                    title: Text('Sign Out'),
+                  ),
+                ),
+              ],
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: isCollasped
+                      ? MainAxisAlignment.center
+                      : MainAxisAlignment.start,
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: AppColors.surfaceDark,
+                      child:
+                          Text(initials, style: TextStyle(color: Colors.white)),
+                    ),
+                    if (!isCollasped) ...[
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(userName,
+                            style: TextStyle(color: Colors.green)),
+                      ),
+                      const Icon(Icons.arrow_drop_up, color: Colors.white)
+                    ],
+                  ],
+                ),
+              ),
+            ),
             GestureDetector(
               onTap: () {
                 setState(() {
@@ -215,91 +276,124 @@ class NavBarDrawer extends StatelessWidget {
     super.key,
     required this.sessions,
     required this.onDelete,
+    required this.userName,
+    required this.userEmail,
+    required this.initials,
+    required this.onSignOut,
   });
 
   final List<ChatSession> sessions;
   final Function(String) onDelete;
+  final String userName;
+  final String userEmail;
+  final String initials;
+  final VoidCallback onSignOut;
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
       backgroundColor: AppColors.secondaryLight,
-      child: ListView(
-        padding: EdgeInsets.zero,
+      child: Column(
         children: [
-          const SizedBox(
-            height: 40,
-          ), // Add padding to avoid status bar
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Recent Chats",
-                style: TextStyle(color: Colors.white70, fontSize: 14),
-              ),
-            ),
-          ),
-          ...sessions.map((session) {
-            return ListTile(
-              leading: const Icon(Icons.chat_bubble_outline,
-                  size: 20, color: Colors.white70),
-              title: Text(
-                session.title.isNotEmpty ? session.title : "Untitled Chat",
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: Colors.white, fontSize: 14),
-              ),
-              trailing: IconButton(
-                icon: const Icon(Icons.delete_outline,
-                    color: Colors.redAccent, size: 20),
-                onPressed: () => onDelete(session.id),
-              ),
-              onTap: () {
-                Navigator.pop(context); // Close drawer
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ChatPage(
-                      sessionId: session.id,
-                      title: session.title,
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                UserAccountsDrawerHeader(
+                  accountName: Text(userName),
+                  accountEmail: Text(userEmail),
+                  currentAccountPicture: CircleAvatar(
+                    backgroundColor: AppColors.primaryLight,
+                    child:
+                        Text(initials, style: TextStyle(color: Colors.white)),
+                  ),
+                  decoration: BoxDecoration(color: AppColors.primaryVariantDark),
+                ),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Recent Chats",
+                      style: TextStyle(color: Colors.white70, fontSize: 14),
                     ),
                   ),
-                );
-              },
-            );
-          }).toList(),
-          const Divider(color: Colors.white30, height: 1),
-          const SizedBox(height: 10),
-          const NavBarButton(
-            isCollasped: false,
-            label: 'Search',
-            icon: Icons.search,
+                ),
+                ...sessions.map((session) {
+                  return ListTile(
+                    leading: const Icon(Icons.chat_bubble_outline,
+                        size: 20, color: Colors.white70),
+                    title: Text(
+                      session.title.isNotEmpty
+                          ? session.title
+                          : "Untitled Chat",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete_outline,
+                          color: Colors.redAccent, size: 20),
+                      onPressed: () => onDelete(session.id),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context); // Close drawer
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ChatPage(
+                            sessionId: session.id,
+                            title: session.title,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }).toList(),
+                const Divider(color: Colors.white30, height: 1),
+                const SizedBox(height: 10),
+                const NavBarButton(
+                  isCollasped: false,
+                  label: 'Search',
+                  icon: Icons.search,
+                ),
+                NavBarButton(
+                  widget: () {
+                    Navigator.pop(context); // Close drawer
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (_) => const HomeScreen()));
+                  },
+                  isCollasped: false,
+                  label: 'New',
+                  icon: Icons.add,
+                ),
+                const NavBarButton(
+                  isCollasped: false,
+                  label: 'Library',
+                  icon: Icons.cloud,
+                ),
+                const NavBarButton(
+                  isCollasped: false,
+                  label: 'Spaces',
+                  icon: Icons.language,
+                ),
+                const NavBarButton(
+                  isCollasped: false,
+                  label: 'Discover',
+                  icon: Icons.auto_awesome,
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
-          NavBarButton(
-            widget: () {
-              Navigator.pop(context); // Close drawer
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (_) => const HomeScreen()));
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.white70),
+            title:
+                const Text('Sign Out', style: TextStyle(color: Colors.white)),
+            onTap: () {
+              onSignOut();
+              Navigator.pop(context);
             },
-            isCollasped: false,
-            label: 'New',
-            icon: Icons.add,
-          ),
-          const NavBarButton(
-            isCollasped: false,
-            label: 'Library',
-            icon: Icons.cloud,
-          ),
-          const NavBarButton(
-            isCollasped: false,
-            label: 'Spaces',
-            icon: Icons.language,
-          ),
-          const NavBarButton(
-            isCollasped: false,
-            label: 'Discover',
-            icon: Icons.auto_awesome,
           ),
           const SizedBox(height: 20),
         ],

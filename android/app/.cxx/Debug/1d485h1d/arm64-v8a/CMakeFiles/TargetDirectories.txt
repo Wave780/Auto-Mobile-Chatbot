@@ -1,0 +1,2 @@
+/Users/macbook/auto_mobile_chatbot/android/app/.cxx/Debug/1d485h1d/arm64-v8a/CMakeFiles/edit_cache.dir
+/Users/macbook/auto_mobile_chatbot/android/app/.cxx/Debug/1d485h1d/arm64-v8a/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "997291290470",
+    "project_id": "auto-aid-b9f9a",
+    "storage_bucket": "auto-aid-b9f9a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:997291290470:android:0bbf925afdf505d62da2a7",
+        "android_client_info": {
+          "package_name": "com.example.auto_mobile_chatbot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "997291290470-299s0o94fpv30arhulrein0madsm0nl1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.auto_mobile_chatbot",
+            "certificate_hash": "9bf7c6cc019cdb593d59c26f61cb40a07b020a89"
+          }
+        },
+        {
+          "client_id": "997291290470-0hoq25r0l165d5v5tpuooq9njsa49puj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYAR9QOLUreitD8kdbopsV4pMGHG9WgWA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "997291290470-0hoq25r0l165d5v5tpuooq9njsa49puj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "997291290470-e1jtvlhcq10g7e35uomm8mctka0p1ntg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.autoMobileChatbot"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/macbook/Developer/flutter 3.29/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/macbook/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/macbook/auto_mobile_chatbot/android/app/.cxx/Debug/1d485h1d/armeabi-v7a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/macbook/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/macbook/auto_mobile_chatbot/android/app/.cxx/Debug/1d485h1d/armeabi-v7a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}
